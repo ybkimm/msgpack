@@ -8,14 +8,15 @@ import (
 )
 
 var (
-	ErrTooLongString   = errors.New("msgpack: string is too long")
-	ErrTooLongBinary   = errors.New("msgpack: binary is too long")
-	ErrTooBigMap       = errors.New("msgpack: map is too big")
-	ErrTooBigExtension = errors.New("msgpack: extension is too big")
-	ErrUnexpectedEOF   = errors.New("msgpack: unexpected EOF")
-	ErrNoReader        = errors.New("msgpack: reader is nil")
-	ErrDecodeNil       = errors.New("msgpack: nil value was passed to decode function")
-	ErrInvalidTime     = errors.New("msgpack: invalid time")
+	ErrTooLongString    = errors.New("msgpack: string is too long")
+	ErrTooLongBinary    = errors.New("msgpack: binary is too long")
+	ErrTooBigMap        = errors.New("msgpack: map is too big")
+	ErrTooBigExtension  = errors.New("msgpack: extension is too big")
+	ErrUnexpectedEOF    = errors.New("msgpack: unexpected EOF")
+	ErrNoReader         = errors.New("msgpack: reader is nil")
+	ErrDecodeNil        = errors.New("msgpack: nil value was passed")
+	ErrDecodeNonPointer = errors.New("msgpack: non-pointer value was passed")
+	ErrInvalidTime      = errors.New("msgpack: invalid time")
 )
 
 type ErrUnsupportedType struct {

@@ -1,9 +1,17 @@
 package msgpack
 
 import (
+	"bytes"
 	"encoding/binary"
 	"io"
+	"reflect"
+	"time"
 )
+
+func Unmarshal(data []byte, out interface{}) error {
+	return NewDecoder(bytes.NewReader(data)).
+		Decode(out)
+}
 
 type Decoder struct {
 	r      io.Reader
@@ -16,6 +24,70 @@ type Decoder struct {
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
 		r: r,
+	}
+}
+
+func (d *Decoder) Decode(v interface{}) error {
+	switch vv := v.(type) {
+	case Map:
+		return d.DecodeMap(vv)
+
+	case Array:
+		return d.DecodeArray(vv)
+
+	case Extension:
+		return d.DecodeExtension(vv)
+
+	case *bool:
+		return d.DecodeBool(vv)
+
+	case *int:
+		return d.DecodeInt(vv)
+
+	case *int8:
+		return d.DecodeInt8(vv)
+
+	case *int16:
+		return d.DecodeInt16(vv)
+
+	case *int32:
+		return d.DecodeInt32(vv)
+
+	case *int64:
+		return d.DecodeInt64(vv)
+
+	case *uint:
+		return d.DecodeUint(vv)
+
+	case *uint8:
+		return d.DecodeUint8(vv)
+
+	case *uint16:
+		return d.DecodeUint16(vv)
+
+	case *uint32:
+		return d.DecodeUint32(vv)
+
+	case *uint64:
+		return d.DecodeUint64(vv)
+
+	case *float32:
+		return d.DecodeFloat32(vv)
+
+	case *float64:
+		return d.DecodeFloat64(vv)
+
+	case *string:
+		return d.DecodeString(vv)
+
+	case *[]byte:
+		return d.DecodeBinary(vv)
+
+	case *time.Time:
+		return d.DecodeTime(vv)
+
+	default:
+		return &ErrUnsupportedType{reflect.TypeOf(v)}
 	}
 }
 

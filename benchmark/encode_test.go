@@ -4,17 +4,31 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/francoispqt/gojay"
+	msgpack2 "github.com/vmihailenco/msgpack"
 	"github.com/ybkimm/msgpack"
 )
 
-func BenchmarkJSONMarshalSmallData(b *testing.B) {
+func BenchmarkMarshalSmallData(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		json.Marshal(SmallData)
+		msgpack.Marshal(SmallStruct)
 	}
 }
 
-func BenchmarkMarshalSmallData(b *testing.B) {
+func BenchmarkVmihailencoMsgpackMarshalSmallData(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		msgpack.Marshal(SmallData)
+		msgpack2.Marshal(SmallStruct)
+	}
+}
+
+func BenchmarkJSONMarshalSmallData(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		json.Marshal(SmallStruct)
+	}
+}
+
+func BenchmarkGojayMarshalSmallData(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		gojay.Marshal(SmallStruct)
 	}
 }
