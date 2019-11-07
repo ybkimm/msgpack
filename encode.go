@@ -1,7 +1,6 @@
 package msgpack
 
 import (
-	"bytes"
 	"encoding/binary"
 	"encoding/json"
 	"io"
@@ -9,12 +8,7 @@ import (
 )
 
 func Marshal(v interface{}) ([]byte, error) {
-	buf := bytes.NewBuffer(make([]byte, 0, 512))
-	err := NewEncoder(buf).Encode(v)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
+	return NewEncoder(nil).encode(v)
 }
 
 type Encoder struct {
@@ -24,133 +18,138 @@ type Encoder struct {
 }
 
 func NewEncoder(w io.Writer) *Encoder {
-	return &Encoder{
-		w: w,
-	}
+	return (&Encoder{w: w}).Reset()
 }
 
-func (e *Encoder) Encode(v interface{}) error {
+func (e *Encoder) encode(v interface{}) ([]byte, error) {
 	if v == nil {
 		e.grow(1)
 		e.writeByte(Nil)
-		return e.flush()
+		return e.buf, e.err
 	}
 
 	switch vv := v.(type) {
 	case Map:
-		return e.EncodeMap(vv)
+		return e.encodeMap(vv)
 
 	case Array:
-		return e.EncodeArray(vv)
+		return e.encodeArray(vv)
 
 	case Extension:
-		return e.EncodeExtension(vv)
+		return e.encodeExtension(vv)
 
 	case bool:
-		return e.EncodeBool(vv)
+		return e.encodeBool(vv)
 
 	case []bool:
-		return e.EncodeArray((*BoolArray)(&vv))
+		return e.encodeArray((*BoolArray)(&vv))
 
 	case int:
-		return e.EncodeInt(vv)
+		return e.encodeInt(vv)
 
 	case []int:
-		return e.EncodeArray((*IntArray)(&vv))
+		return e.encodeArray((*IntArray)(&vv))
 
 	case int8:
-		return e.EncodeInt8(vv)
+		return e.encodeInt8(vv)
 
 	case []int8:
-		return e.EncodeArray((*Int8Array)(&vv))
+		return e.encodeArray((*Int8Array)(&vv))
 
 	case int16:
-		return e.EncodeInt16(vv)
+		return e.encodeInt16(vv)
 
 	case []int16:
-		return e.EncodeArray((*Int16Array)(&vv))
+		return e.encodeArray((*Int16Array)(&vv))
 
 	case int32:
-		return e.EncodeInt32(vv)
+		return e.encodeInt32(vv)
 
 	case []int32:
-		return e.EncodeArray((*Int32Array)(&vv))
+		return e.encodeArray((*Int32Array)(&vv))
 
 	case int64:
-		return e.EncodeInt64(vv)
+		return e.encodeInt64(vv)
 
 	case []int64:
-		return e.EncodeArray((*Int64Array)(&vv))
+		return e.encodeArray((*Int64Array)(&vv))
 
 	case uint:
-		return e.EncodeUint(vv)
+		return e.encodeUint(vv)
 
 	case []uint:
-		return e.EncodeArray((*UintArray)(&vv))
+		return e.encodeArray((*UintArray)(&vv))
 
 	case uint8:
-		return e.EncodeUint8(vv)
+		return e.encodeUint8(vv)
 
 	case uint16:
-		return e.EncodeUint16(vv)
+		return e.encodeUint16(vv)
 
 	case []uint16:
-		return e.EncodeArray((*Uint16Array)(&vv))
+		return e.encodeArray((*Uint16Array)(&vv))
 
 	case uint32:
-		return e.EncodeUint32(vv)
+		return e.encodeUint32(vv)
 
 	case []uint32:
-		return e.EncodeArray((*Uint32Array)(&vv))
+		return e.encodeArray((*Uint32Array)(&vv))
 
 	case uint64:
-		return e.EncodeUint64(vv)
+		return e.encodeUint64(vv)
 
 	case []uint64:
-		return e.EncodeArray((*Uint64Array)(&vv))
+		return e.encodeArray((*Uint64Array)(&vv))
 
 	case float32:
-		return e.EncodeFloat32(vv)
+		return e.encodeFloat32(vv)
 
 	case []float32:
-		return e.EncodeArray((*Float32Array)(&vv))
+		return e.encodeArray((*Float32Array)(&vv))
 
 	case float64:
-		return e.EncodeFloat64(vv)
+		return e.encodeFloat64(vv)
 
 	case []float64:
-		return e.EncodeArray((*Float64Array)(&vv))
+		return e.encodeArray((*Float64Array)(&vv))
 
 	case string:
-		return e.EncodeString(vv)
+		return e.encodeString(vv)
 
 	case []string:
-		return e.EncodeArray((*StringArray)(&vv))
+		return e.encodeArray((*StringArray)(&vv))
 
 	case []byte:
-		return e.EncodeBinary(vv)
+		return e.encodeBinary(vv)
 
 	case [][]byte:
-		return e.EncodeArray((*BinaryArray)(&vv))
+		return e.encodeArray((*BinaryArray)(&vv))
 
 	case time.Time:
-		return e.EncodeTime(vv)
+		return e.encodeTime(vv)
 
 	case []time.Time:
-		return e.EncodeArray((*TimeArray)(&vv))
+		return e.encodeArray((*TimeArray)(&vv))
 
 	default:
-		// Fallback: json
+		// Fallback:
 		src, err := json.Marshal(v)
 		if err != nil {
-			return err
+			e.err = err
+			return e.buf, e.err
 		}
-		return e.EncodeJSON(src)
+		return e.encodeJSON(src)
 	}
 }
 
+func (e *Encoder) Reset() *Encoder {
+	e.buf = make([]byte, 0, 512)
+	e.err = nil
+	return e
+}
+
 func (e *Encoder) grow(n int) {
-	if cap(e.buf)-len(e.buf) > n {
+	if cap(e.buf)-len(e.buf) < n {
 		buf := make([]byte, len(e.buf), 2*cap(e.buf)+n)
 		copy(buf, e.buf)
 		e.buf = buf

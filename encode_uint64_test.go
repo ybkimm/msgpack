@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestEncoder_EncodeUint64(t *testing.T) {
+func TestEncoder_encodeUint64(t *testing.T) {
 	tests := []struct {
 		name    string
 		v       uint64
@@ -23,13 +23,12 @@ func TestEncoder_EncodeUint64(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer([]byte{})
-			e := NewEncoder(buf)
-			if err := e.EncodeUint64(tt.v); (err != nil) != tt.wantErr {
-				t.Errorf("EncodeUint64() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := NewEncoder(nil).encodeUint64(tt.v)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("encodeUint64() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeUint64() got = [% X], want = [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeUint64() got = [% X], want = [% X]", got, tt.want)
 			}
 		})
 	}

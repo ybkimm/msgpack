@@ -1,20 +1,19 @@
 package msgpack
 
-func (e *Encoder) EncodeBinary(v []byte) error {
-	e.putBinary(v)
-	return e.flush()
+func MarshalBinary(v []byte) ([]byte, error) {
+	return NewEncoder(nil).encodeBinary(v)
 }
 
 func (e *Encoder) PutBinary(v []byte) {
-	e.putBinary(v)
+	e.encodeBinary(v)
 }
 
 func (e *Encoder) PutBinaryKey(key string, v []byte) {
-	e.putString(key)
-	e.putBinary(v)
+	e.encodeString(key)
+	e.encodeBinary(v)
 }
 
-func (e *Encoder) putBinary(v []byte) {
+func (e *Encoder) encodeBinary(v []byte) ([]byte, error) {
 	binlen := len(v)
 	switch {
 	case binlen <= bin8MaxLen:
@@ -37,4 +36,5 @@ func (e *Encoder) putBinary(v []byte) {
 	}
 
 	e.writeBytes(v)
+	return e.buf, e.err
 }

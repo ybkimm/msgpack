@@ -1,44 +1,46 @@
 package msgpack
 
-// EncodeString encodes a string to msgpack format
-func (e *Encoder) EncodeString(v string) error {
-	e.putString(v)
-	return e.flush()
+func MarshalString(v string) ([]byte, error) {
+	return NewEncoder(nil).encodeString(v)
 }
 
 func (e *Encoder) PutString(v string) {
-	e.putString(v)
+	e.encodeString(v)
 }
 
 func (e *Encoder) PutStringKey(key string, v string) {
-	e.putString(key)
-	e.putString(v)
+	e.encodeString(key)
+	e.encodeString(v)
 }
 
-func (e *Encoder) putString(v string) {
+func (e *Encoder) encodeString(v string) ([]byte, error) {
 	strlen := len(v)
 	switch {
 	case strlen <= fixstrMaxLen:
 		e.grow(strlen + 1)
 		e.writeByte(fixstrPrefix | byte(strlen))
+		e.writeString(v)
 
 	case strlen <= str8MaxLen:
 		e.grow(strlen + 2)
 		e.writeBytes([]byte{String8, byte(strlen)})
+		e.writeString(v)
 
 	case strlen <= str16MaxLen:
 		e.grow(strlen + 3)
 		e.writeByte(String16)
 		e.writeUint16(uint16(strlen))
+		e.writeString(v)
 
 	case strlen <= str32MaxLen:
 		e.grow(strlen + 5)
 		e.writeByte(String32)
 		e.writeUint32(uint32(strlen))
+		e.writeString(v)
 
 	default:
-		panic(ErrTooLongString)
+		e.err = ErrTooLongString
 	}
 
-	e.writeString(v)
+	return e.buf, e.err
 }

@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+var benchDataDecodeBool = []byte{0xC3}
+
 func TestDecoder_DecodeBool(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -43,5 +45,12 @@ func TestDecoder_DecodeBool(t *testing.T) {
 				t.Errorf("DecodeBool() got = %v, want = %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func BenchmarkDecoder_DecodeBool(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var out bool
+		NewDecoder(bytes.NewReader(benchDataDecodeBool)).DecodeBool(&out)
 	}
 }

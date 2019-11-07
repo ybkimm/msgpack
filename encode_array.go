@@ -1,20 +1,19 @@
 package msgpack
 
-func (e *Encoder) EncodeArray(a Array) error {
-	e.putArray(a)
-	return e.flush()
+func MarshalArray(a Array) ([]byte, error) {
+	return NewEncoder(nil).encodeArray(a)
 }
 
 func (e *Encoder) PutArray(a Array) {
-	e.putArray(a)
+	e.encodeArray(a)
 }
 
 func (e *Encoder) PutArrayKey(key string, a Array) {
-	e.putString(key)
-	e.putArray(a)
+	e.encodeString(key)
+	e.encodeArray(a)
 }
 
-func (e *Encoder) putArray(a Array) {
+func (e *Encoder) encodeArray(a Array) ([]byte, error) {
 	e.grow(512)
 
 	arrlen := a.Length()
@@ -34,4 +33,6 @@ func (e *Encoder) putArray(a Array) {
 	for i, l := 0, int(arrlen); i < l; i++ {
 		a.MarshalMsgpackArray(e, i)
 	}
+
+	return e.buf, e.err
 }

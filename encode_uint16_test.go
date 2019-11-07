@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestEncoder_EncodeUint16(t *testing.T) {
+func TestEncoder_encodeUint16(t *testing.T) {
 	tests := []struct {
 		name    string
 		v       uint16
@@ -15,21 +15,19 @@ func TestEncoder_EncodeUint16(t *testing.T) {
 		{
 			"a uint16",
 			1,
-			[]byte{
-				0xCD, 0x00, 0x01,
-			},
+			[]byte{0xCD, 0x00, 0x01},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer([]byte{})
-			e := NewEncoder(buf)
-			if err := e.EncodeUint16(tt.v); (err != nil) != tt.wantErr {
-				t.Errorf("EncodeUint16() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := NewEncoder(nil).encodeUint16(tt.v)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("encodeUint16() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeUint16() got = [% X], want = [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeUint16() got = [% X], want = [% X]", got, tt.want)
 			}
 		})
 	}

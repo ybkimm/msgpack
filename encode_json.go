@@ -5,74 +5,41 @@ import (
 	"encoding/json"
 	"io"
 	"math"
-	"reflect"
 )
 
 func FromJSON(data []byte) ([]byte, error) {
-	buf := bytes.NewBuffer(make([]byte, 0, 512))
-	e := NewEncoder(buf)
-	err := e.EncodeJSON(data)
-	if err != nil {
-		return nil, err
-	}
-	return buf.Bytes(), nil
-}
-
-func (e *Encoder) EncodeJSON(data []byte) error {
-	e.putJSON(data)
-	return e.flush()
+	return NewEncoder(nil).encodeJSON(data)
 }
 
 func (e *Encoder) PutJSON(data []byte) {
-	e.putJSON(data)
+	e.encodeJSON(data)
 }
 
 func (e *Encoder) PutJSONKey(key string, data []byte) {
-	e.putString(key)
-	e.putJSON(data)
+	e.encodeString(key)
+	e.encodeJSON(data)
 }
 
-func (e *Encoder) putJSON(data []byte) {
+func (e *Encoder) encodeJSON(data []byte) ([]byte, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 
 	// Check first token
 	t, err := decoder.Token()
 	if err == io.EOF {
-		return
-	} else if err != nil {
+		return e.buf, e.err
+	}
+	if err != nil {
 		e.err = err
-		return
+		return e.buf, e.err
 	}
 
-	// Convert
-	if v, ok := t.(json.Delim); ok {
-		if v == '{' {
-			e.putJSONObject(decoder)
-		} else if v == '[' {
-			e.putJSONArray(decoder)
-		} else {
-			err = &ErrUnexpectedJSONToken{t}
-		}
-	} else {
-		e.putJSONValue(t)
-	}
-
-	// More tokens?
-	if decoder.More() {
-		t, err := decoder.Token()
-		if err != nil {
-			e.err = err
-		} else {
-			e.err = &ErrUnexpectedJSONToken{Token: t}
-		}
-	}
+	return e.encodeJSONValue(decoder, t)
 }
 
-func (e *Encoder) putJSONObject(decoder *json.Decoder) {
+func (e *Encoder) encodeJSONObject(decoder *json.Decoder) ([]byte, error) {
 	var (
-		buf = bytes.NewBuffer(make([]byte, 0, 512))
-		je  = NewEncoder(buf)
-		i   int
+		je = NewEncoder(nil)
+		i  int
 	)
 
 LOOP:
@@ -84,60 +51,43 @@ LOOP:
 			} else {
 				e.err = err
 			}
-			return
+			return e.buf, e.err
 		}
 
 		// Is key?
 		if isKey {
-			switch v := t.(type) {
-			case json.Delim:
-				if v == '}' {
-					break LOOP
-				} else {
-					e.err = &ErrUnexpectedJSONToken{t}
-					return
-				}
-
-			case string:
-				je.putString(v)
-				i++
-
-			default:
-				e.err = &ErrUnexpectedJSONToken{t}
-				return
+			if v, ok := t.(json.Delim); ok && v == '}' {
+				break LOOP
+			} else if str, ok := t.(string); ok {
+				je.encodeString(str)
+			} else {
+				je.err = &ErrUnexpectedJSONToken{t}
 			}
+			i++
 		} else {
-			switch v := t.(type) {
-			case json.Delim:
-				if v == '{' {
-					je.putJSONObject(decoder)
-				} else if v == '[' {
-					je.putJSONArray(decoder)
-				} else {
-					err = &ErrUnexpectedJSONToken{t}
-					return
-				}
+			je.encodeJSONValue(decoder, t)
+		}
 
-			default:
-				je.putJSONValue(v)
-			}
+		if je.err != nil {
+			e.err = je.err
+			return e.buf, e.err
 		}
 	}
 
-	e.err = je.flush()
-	buflen := buf.Len()
+	bufLen := len(je.buf)
+
 	switch {
 	case i <= fixmapMaxLen:
-		e.grow(buflen + 1)
+		e.grow(bufLen + 1)
 		e.writeByte(fixmapPrefix | byte(i))
 
 	case i <= map16MaxLen:
-		e.grow(buflen + 3)
+		e.grow(bufLen + 3)
 		e.writeByte(Map16)
 		e.writeUint16(uint16(i))
 
 	case i <= map32MaxLen:
-		e.grow(buflen + 5)
+		e.grow(bufLen + 5)
 		e.writeByte(Map32)
 		e.writeUint32(uint32(i))
 
@@ -145,14 +95,14 @@ LOOP:
 		e.err = ErrTooBigMap
 	}
 
-	e.writeBytes(buf.Bytes())
+	e.writeBytes(je.buf)
+	return e.buf, e.err
 }
 
-func (e *Encoder) putJSONArray(decoder *json.Decoder) {
+func (e *Encoder) encodeJSONArray(decoder *json.Decoder) ([]byte, error) {
 	var (
-		buf = bytes.NewBuffer(make([]byte, 0, 512))
-		je  = NewEncoder(buf)
-		i   int
+		je = NewEncoder(nil)
+		i  int
 	)
 
 LOOP:
@@ -164,41 +114,35 @@ LOOP:
 			} else {
 				e.err = err
 			}
-			return
+			return e.buf, e.err
 		}
 
-		switch v := t.(type) {
-		case json.Delim:
-			if v == '{' {
-				je.putJSONObject(decoder)
-			} else if v == '[' {
-				je.putJSONArray(decoder)
-			} else if v == ']' {
-				break LOOP
-			} else {
-				err = &ErrUnexpectedJSONToken{t}
-				return
-			}
+		if v, ok := t.(json.Delim); ok && v == ']' {
+			break LOOP
+		} else {
+			je.encodeJSONValue(decoder, t)
+		}
 
-		default:
-			je.putJSONValue(v)
+		if je.err != nil {
+			e.err = je.err
+			return e.buf, e.err
 		}
 	}
 
-	e.err = je.flush()
-	buflen := buf.Len()
+	bufLen := len(je.buf)
+
 	switch {
 	case i <= fixarrMaxLen:
-		e.grow(buflen + 1)
+		e.grow(bufLen + 1)
 		e.writeByte(fixarrPrefix | byte(i))
 
 	case i <= arr16MaxLen:
-		e.grow(buflen + 3)
+		e.grow(bufLen + 3)
 		e.writeByte(Array16)
 		e.writeUint16(uint16(i))
 
 	case i <= arr32MaxLen:
-		e.grow(buflen + 5)
+		e.grow(bufLen + 5)
 		e.writeByte(Array32)
 		e.writeUint32(uint32(i))
 
@@ -206,32 +150,43 @@ LOOP:
 		e.err = ErrTooBigMap
 	}
 
-	e.writeBytes(buf.Bytes())
+	e.writeBytes(je.buf)
+	return e.buf, e.err
 }
 
-func (e *Encoder) putJSONValue(v interface{}) {
+func (e *Encoder) encodeJSONValue(decoder *json.Decoder, v json.Token) ([]byte, error) {
 	if v == nil {
 		e.writeByte(Nil)
-		return
-	}
+	} else {
+		switch vv := v.(type) {
+		case json.Delim:
+			if vv == '{' {
+				return e.encodeJSONObject(decoder)
+			} else if vv == '[' {
+				return e.encodeJSONArray(decoder)
+			} else {
+				e.err = &ErrUnexpectedJSONToken{vv}
+			}
 
-	switch vv := v.(type) {
-	case bool:
-		e.putBool(vv)
+		case bool:
+			return e.encodeBool(vv)
 
-	case float64:
-		if math.Abs(math.Mod(vv, 1)) > 0 {
-			e.putFloat64(vv)
-		} else if vv < 0 {
-			e.putInt(int(vv))
-		} else {
-			e.putUint(uint(vv))
+		case float64:
+			if math.Abs(math.Mod(vv, 1)) > 0 {
+				return e.encodeFloat64(vv)
+			} else if vv < 0 {
+				return e.encodeInt(int(vv))
+			} else {
+				return e.encodeUint(uint(vv))
+			}
+
+		case string:
+			return e.encodeString(vv)
+
+		default:
+			e.err = &ErrUnexpectedJSONToken{v}
 		}
-
-	case string:
-		e.putString(vv)
-
-	default:
-		e.err = &ErrUnsupportedType{reflect.TypeOf(v)}
 	}
+
+	return e.buf, e.err
 }

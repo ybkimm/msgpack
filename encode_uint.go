@@ -1,37 +1,31 @@
 package msgpack
 
-func (e *Encoder) EncodeUint(v uint) error {
-	e.putUint(v)
-	return e.flush()
+func MarshalUint(v uint) ([]byte, error) {
+	return NewEncoder(nil).encodeUint(v)
 }
 
 func (e *Encoder) PutUint(v uint) {
-	e.putUint(v)
+	e.encodeUint(v)
 }
 
 func (e *Encoder) PutUintKey(key string, v uint) {
-	e.putString(key)
-	e.putUint(v)
+	e.encodeString(key)
+	e.encodeUint(v)
 }
 
-func (e *Encoder) putUint(v uint) {
+func (e *Encoder) encodeUint(v uint) ([]byte, error) {
 	if v <= positiveFixnumMax {
 		e.grow(1)
 		e.writeByte(byte(v))
-		return
+	} else if v>>8 == 0 {
+		e.encodeUint8(uint8(v))
+	} else if v>>16 == 0 {
+		e.encodeUint16(uint16(v))
+	} else if v>>32 == 0 {
+		e.encodeUint32(uint32(v))
+	} else {
+		e.encodeUint64(uint64(v))
 	}
 
-	switch {
-	case v>>8 == 0:
-		e.putUint8(uint8(v))
-
-	case v>>16 == 0:
-		e.putUint16(uint16(v))
-
-	case v>>32 == 0:
-		e.putUint32(uint32(v))
-
-	default:
-		e.putUint64(uint64(v))
-	}
+	return e.buf, e.err
 }

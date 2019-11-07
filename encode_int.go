@@ -1,42 +1,41 @@
 package msgpack
 
-func (e *Encoder) EncodeInt(v int) error {
-	e.putInt(v)
-	return e.flush()
+func MarshalInt(v int) ([]byte, error) {
+	return NewEncoder(nil).encodeInt(v)
 }
 
 func (e *Encoder) PutInt(v int) {
-	e.putInt(v)
+	e.encodeInt(v)
 }
 
 func (e *Encoder) PutIntKey(key string, v int) {
-	e.putString(key)
-	e.putInt(v)
+	e.encodeString(key)
+	e.encodeInt(v)
 }
 
-func (e *Encoder) putInt(v int) {
+func (e *Encoder) encodeInt(v int) ([]byte, error) {
 	if v >= 0 {
-		e.putUint(uint(v))
-		return
+		e.encodeUint(uint(v))
+		return e.buf, e.err
 	}
 
 	if v >= negativeFixnumMin {
 		e.grow(1)
 		e.writeByte(byte(v))
-		return
+		return e.buf, e.err
 	}
 
 	switch {
 	case v >= -128:
-		e.putInt8(int8(v))
+		return e.encodeInt8(int8(v))
 
 	case v >= -32768:
-		e.putInt16(int16(v))
+		return e.encodeInt16(int16(v))
 
 	case v >= -2147483648:
-		e.putInt32(int32(v))
+		return e.encodeInt32(int32(v))
 
 	default:
-		e.putInt64(int64(v))
+		return e.encodeInt64(int64(v))
 	}
 }

@@ -40,14 +40,13 @@ func TestEncoder_EncodeTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer([]byte{})
-			e := NewEncoder(buf)
-			if err := e.EncodeTime(tt.t); (err != nil) != tt.wantErr {
+			got, err := NewEncoder(nil).encodeTime(tt.t)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("EncodeTime() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeTime() got = [% X], want = [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("EncodeTime() got = [% X], want = [% X]", got, tt.want)
 			}
 		})
 	}

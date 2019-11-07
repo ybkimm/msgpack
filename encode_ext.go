@@ -1,20 +1,19 @@
 package msgpack
 
-func (e *Encoder) EncodeExtension(ext Extension) error {
-	e.putExtension(ext)
-	return e.flush()
+func MarshalExtension(ext Extension) ([]byte, error) {
+	return NewEncoder(nil).encodeExtension(ext)
 }
 
 func (e *Encoder) PutExtension(ext Extension) {
-	e.putExtension(ext)
+	e.encodeExtension(ext)
 }
 
 func (e *Encoder) PutExtensionKey(key string, ext Extension) {
-	e.putString(key)
-	e.putExtension(ext)
+	e.encodeString(key)
+	e.encodeExtension(ext)
 }
 
-func (e *Encoder) putExtension(ext Extension) {
+func (e *Encoder) encodeExtension(ext Extension) ([]byte, error) {
 	typ := ext.ExtensionType()
 	data := ext.MarshalMsgpackExtension()
 
@@ -61,4 +60,6 @@ func (e *Encoder) putExtension(ext Extension) {
 
 	e.writeByte(uint8(typ))
 	e.writeBytes(data)
+
+	return e.buf, e.err
 }

@@ -1,21 +1,22 @@
 package msgpack
 
-func (e *Encoder) EncodeUint64(v uint64) error {
-	e.putUint64(v)
-	return e.flush()
+func MarshalUint64(v uint64) ([]byte, error) {
+	return NewEncoder(nil).encodeUint64(v)
 }
 
 func (e *Encoder) PutUint64(v uint64) {
-	e.putUint64(v)
+	e.encodeUint64(v)
 }
 
 func (e *Encoder) PutUint64Key(key string, v uint64) {
-	e.putString(key)
-	e.putUint64(v)
+	e.encodeString(key)
+	e.encodeUint64(v)
 }
 
-func (e *Encoder) putUint64(v uint64) {
-	e.grow(5)
+func (e *Encoder) encodeUint64(v uint64) ([]byte, error) {
+	e.grow(9)
 	e.writeByte(Uint64)
 	e.writeUint64(v)
+
+	return e.buf, e.err
 }

@@ -2,10 +2,11 @@ package msgpack
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
 )
 
-func TestEncoder_EncodeArray(t *testing.T) {
+func TestEncoder_encodeArray(t *testing.T) {
 	tests := []struct {
 		name    string
 		arr     Array
@@ -34,15 +35,26 @@ func TestEncoder_EncodeArray(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer([]byte{})
-			e := NewEncoder(buf)
-			if err := e.EncodeArray(tt.arr); (err != nil) != tt.wantErr {
-				t.Errorf("EncodeArray() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := NewEncoder(nil).encodeArray(tt.arr)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("encodeArray() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeArray() got = [% X], want = [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeArray() got = [% X], want = [% X]", got, tt.want)
 			}
 		})
+	}
+}
+
+func BenchmarkEncoder_encodeArray(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		NewEncoder(nil).encodeArray(SmallArray)
+	}
+}
+
+func BenchmarkJSON_marshalArray(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		json.Marshal(SmallArray)
 	}
 }

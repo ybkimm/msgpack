@@ -1,20 +1,19 @@
 package msgpack
 
-func (e *Encoder) EncodeMap(o Map) error {
-	e.putMap(o)
-	return e.flush()
+func MarshalMap(o Map) ([]byte, error) {
+	return NewEncoder(nil).encodeMap(o)
 }
 
 func (e *Encoder) PutMap(o Map) {
-	e.putMap(o)
+	e.encodeMap(o)
 }
 
 func (e *Encoder) PutMapKey(key string, o Map) {
-	e.putString(key)
-	e.putMap(o)
+	e.encodeString(key)
+	e.encodeMap(o)
 }
 
-func (e *Encoder) putMap(o Map) {
+func (e *Encoder) encodeMap(o Map) ([]byte, error) {
 	keysize := o.KeySize()
 	e.grow(512)
 
@@ -32,4 +31,5 @@ func (e *Encoder) putMap(o Map) {
 	}
 
 	o.MarshalMsgpackMap(e)
+	return e.buf, e.err
 }

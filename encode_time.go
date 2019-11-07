@@ -2,27 +2,30 @@ package msgpack
 
 import "time"
 
-func (e *Encoder) EncodeTime(t time.Time) error {
-	e.putTime(t.UTC())
-	return e.flush()
+func MarshalTime(t time.Time) ([]byte, error) {
+	return NewEncoder(nil).encodeTime(t)
 }
 
 func (e *Encoder) PutTime(t time.Time) {
-	e.putTime(t.UTC())
+	e.encodeTime(t.UTC())
 }
 
 func (e *Encoder) PutTimeKey(key string, t time.Time) {
-	e.putString(key)
-	e.putTime(t.UTC())
+	e.encodeString(key)
+	e.encodeTime(t.UTC())
 }
 
-func (e *Encoder) putTime(t time.Time) {
+func (e *Encoder) encodeTime(t time.Time) ([]byte, error) {
+	if t.Location() != time.UTC {
+		return e.encodeTime(t.UTC())
+	}
+
 	var (
 		seconds     = uint64(t.Unix())
 		nanoseconds = uint64(t.UnixNano()) - 1000000000*seconds
 	)
 
-	e.putExtension(&extTime{
+	return e.encodeExtension(&extTime{
 		seconds:     seconds,
 		nanoseconds: nanoseconds,
 	})

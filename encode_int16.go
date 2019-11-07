@@ -1,21 +1,22 @@
 package msgpack
 
-func (e *Encoder) EncodeInt16(v int16) error {
-	e.putInt16(v)
-	return e.flush()
+func MarshalInt16(v int16) ([]byte, error) {
+	return NewEncoder(nil).encodeInt16(v)
 }
 
 func (e *Encoder) PutInt16(v int16) {
-	e.putInt16(v)
+	e.encodeInt16(v)
 }
 
 func (e *Encoder) PutInt16Key(key string, v int16) {
-	e.putString(key)
-	e.putInt16(v)
+	e.encodeString(key)
+	e.encodeInt16(v)
 }
 
-func (e *Encoder) putInt16(v int16) {
+func (e *Encoder) encodeInt16(v int16) ([]byte, error) {
 	e.grow(3)
 	e.writeByte(Int16)
 	e.writeUint16(uint16(v))
+
+	return e.buf, e.err
 }

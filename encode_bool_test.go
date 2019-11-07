@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestEncoder_EncodeBool(t *testing.T) {
+func TestEncoder_encodeBool(t *testing.T) {
 	tests := []struct {
 		name    string
 		v       bool
@@ -27,13 +27,13 @@ func TestEncoder_EncodeBool(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer(make([]byte, 0, 512))
-			e := NewEncoder(buf)
-			if err := e.EncodeBool(tt.v); (err != nil) != tt.wantErr {
-				t.Errorf("EncodeBool() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := NewEncoder(nil).encodeBool(tt.v)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("encodeBool() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeBool() got = [% X], want [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeBool() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -1,14 +1,14 @@
 package msgpack
 
 import (
-	"reflect"
+	"bytes"
 	"testing"
 )
 
 //  [84 A6 A0 04 01 00 C0 00 A6 C4 04 01 00 C0 00 A6 F0 04 01 00 C0 00 01 A4 24 05 01 00 C3 A3 4B 05 01 C0]
 //  [84 A6 73 74 72 69 6E 67 A6 73 74 72 69 6E 67 A6 6E 75 6D 62 65 72 01 A4 62 6F 6F 6C C3 A3 6E 69 6C C0]
 
-func TestFromJSON(t *testing.T) {
+func TestEncoder_encodeJSON(t *testing.T) {
 	tests := []struct {
 		name    string
 		data    []byte
@@ -75,13 +75,13 @@ func TestFromJSON(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := FromJSON(tt.data)
+			got, err := NewEncoder(nil).encodeJSON(tt.data)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("FromJSON() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("encodeJSON() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("FromJSON() got = [% X], want [% X]", got, tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeJSON() got = [% X], want [% X]", got, tt.want)
 			}
 		})
 	}

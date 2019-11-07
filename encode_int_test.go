@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestEncoder_EncodeInt(t *testing.T) {
+func TestEncoder_encodeInt(t *testing.T) {
 	tests := []struct {
 		name    string
 		v       int
@@ -75,14 +75,13 @@ func TestEncoder_EncodeInt(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer(make([]byte, 0, 512))
-			e := NewEncoder(buf)
-			if err := e.EncodeInt(tt.v); (err != nil) != tt.wantErr {
-				t.Errorf("EncodeInt() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := NewEncoder(nil).encodeInt(tt.v)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("encodeInt() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeInt() got = [% X], want [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeInt() got = [% X], want [% X]", got, tt.want)
 			}
 		})
 	}

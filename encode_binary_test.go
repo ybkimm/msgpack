@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestEncoder_EncodeBinary(t *testing.T) {
+func TestEncoder_encodeBinary(t *testing.T) {
 	tests := []struct {
 		name    string
 		p       []byte
@@ -21,13 +21,12 @@ func TestEncoder_EncodeBinary(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer(make([]byte, 0, 512))
-			e := NewEncoder(buf)
-			if err := e.EncodeBinary(tt.p); (err != nil) != tt.wantErr {
-				t.Errorf("EncodeBinary() error = %v, wantErr %v", err, tt.wantErr)
+			got, err := NewEncoder(nil).encodeBinary(tt.p)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("encodeBinary() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			if !bytes.Equal(buf.Bytes(), tt.want) {
-				t.Errorf("EncodeBinary() got = [% X], want [% X]", buf.Bytes(), tt.want)
+			if !bytes.Equal(got, tt.want) {
+				t.Errorf("encodeBinary() got = [% X], want [% X]", got, tt.want)
 			}
 		})
 	}

@@ -2,22 +2,23 @@ package msgpack
 
 import "math"
 
-func (e *Encoder) EncodeFloat64(v float64) error {
-	e.putFloat64(v)
-	return e.flush()
+func MarshalFloat64(v float64) ([]byte, error) {
+	return NewEncoder(nil).encodeFloat64(v)
 }
 
 func (e *Encoder) PutFloat64(v float64) {
-	e.putFloat64(v)
+	e.encodeFloat64(v)
 }
 
 func (e *Encoder) PutFloat64Key(key string, v float64) {
-	e.putString(key)
-	e.putFloat64(v)
+	e.encodeString(key)
+	e.encodeFloat64(v)
 }
 
-func (e *Encoder) putFloat64(v float64) {
+func (e *Encoder) encodeFloat64(v float64) ([]byte, error) {
 	e.grow(5)
 	e.writeByte(Float64)
 	e.writeUint64(math.Float64bits(v))
+
+	return e.buf, e.err
 }

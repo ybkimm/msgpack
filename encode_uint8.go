@@ -1,20 +1,21 @@
 package msgpack
 
-func (e *Encoder) EncodeUint8(v uint8) error {
-	e.putUint8(v)
-	return e.flush()
+func MarshalUint8(v uint8) ([]byte, error) {
+	return NewEncoder(nil).encodeUint8(v)
 }
 
 func (e *Encoder) PutUint8(v uint8) {
-	e.putUint8(v)
+	e.encodeUint8(v)
 }
 
 func (e *Encoder) PutUint8Key(key string, v uint8) {
-	e.putString(key)
-	e.putUint8(v)
+	e.encodeString(key)
+	e.encodeUint8(v)
 }
 
-func (e *Encoder) putUint8(v uint8) {
-	e.grow(5)
+func (e *Encoder) encodeUint8(v uint8) ([]byte, error) {
+	e.grow(2)
 	e.writeBytes([]byte{Uint8, byte(v)})
+
+	return e.buf, e.err
 }
