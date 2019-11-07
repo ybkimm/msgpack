@@ -47,10 +47,3 @@ func TestDecoder_DecodeBool(t *testing.T) {
 		})
 	}
 }
-
-func BenchmarkDecoder_DecodeBool(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		var out bool
-		NewDecoder(bytes.NewReader(benchDataDecodeBool)).DecodeBool(&out)
-	}
-}

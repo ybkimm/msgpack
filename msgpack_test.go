@@ -67,6 +67,7 @@ func (s *TestArray) MarshalMsgpackArray(e *Encoder, i int) {
 }
 
 func (s *TestArray) UnmarshalMsgpackArray(d *Decoder, l int) (err error) {
+	*s = make([]string, l)
 	for i := 0; i < l; i++ {
 		err = d.DecodeString(&(*s)[i])
 		if err != nil {

@@ -34,16 +34,18 @@ Testing PC spec:
 * Windows 10 Pro Build 18362.418
 
 ```plaintext
-BenchmarkDecoder_DecodeBool-8             260881              4296 ns/op            4144 B/op          2 allocs/op
-BenchmarkDecoder_decode-8                 222208              5005 ns/op            4224 B/op          4 allocs/op
-BenchmarkEncoder_encodeMap-8              599858              2056 ns/op             576 B/op          2 allocs/op
-BenchmarkEncoder_encodeArray-8            266655              4531 ns/op             576 B/op          2 allocs/op
+BenchmarkDecoder_decodeMap-8              222150              5101 ns/op            4224 B/op          4 allocs/op
+BenchmarkDecoder_decodeArray-8            137916              8557 ns/op            4464 B/op          4 allocs/op
+BenchmarkEncoder_encodeMap-8              571387              2083 ns/op             576 B/op          2 allocs/op
+BenchmarkEncoder_encodeArray-8            266594              4513 ns/op             576 B/op          2 allocs/op
 ```
+
+For benchmark data, see [msgpack_test.go](./msgpack_test.go)
 
 Todo List
 =========
-* Optimizing JSON conversion, decoding. Maybe, sometime...
-* Refactoring decode functions
+* Optimize JSON conversion, decoding. Maybe, sometime...
+* Refactor decode functions
 
 License
 =======
