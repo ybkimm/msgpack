@@ -3,7 +3,7 @@ github.com/ybkimm/msgpack
 [![godoc][godoc_badge]][godoc]
 [![MIT License][license_badge]][license]
 
-Fast MessagePack encoding/decoding library.
+Another MessagePack encoding/decoding library.
 
 This library doesn't use reflection, instead it relies on small interface:
 [Map][map], [Array][array], and [Extension][extension].
