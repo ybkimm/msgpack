@@ -2,7 +2,6 @@ package msgpack
 
 import (
 	"bytes"
-	"encoding/json"
 	"testing"
 )
 
@@ -13,12 +12,12 @@ func TestEncoder_EncodeMap(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		// {
-		// 	"a object",
-		// 	SmallStruct,
-		// 	SmallStructData,
-		// 	false,
-		// },
+		{
+			"a object",
+			SmallStruct,
+			TestStructData,
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -30,17 +29,5 @@ func TestEncoder_EncodeMap(t *testing.T) {
 				t.Errorf("EncodeMap() got = [% X], want = [% X]", got, tt.want)
 			}
 		})
-	}
-}
-
-func BenchmarkEncoder_encodeMap(t *testing.B) {
-	for i := 0; i < t.N; i++ {
-		NewEncoder(nil).encodeMap(SmallStruct)
-	}
-}
-
-func BenchmarkJSON_marshalMap(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		json.Marshal(SmallStruct)
 	}
 }

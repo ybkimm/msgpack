@@ -1,20 +1,20 @@
 package msgpack
 
-type testSmallStruct struct {
+type TestStruct struct {
 	id int
 	ip string
 	ua string
 }
 
-var _ Map = (*testSmallStruct)(nil)
+var _ Map = (*TestStruct)(nil)
 
-func (b *testSmallStruct) MarshalMsgpackMap(e *Encoder) {
+func (b *TestStruct) MarshalMsgpackMap(e *Encoder) {
 	e.PutIntKey("id", b.id)
 	e.PutStringKey("ip", b.ip)
 	e.PutStringKey("ua", b.ua)
 }
 
-func (b *testSmallStruct) UnmarshalMsgpackMap(d *Decoder, key string) error {
+func (b *TestStruct) UnmarshalMsgpackMap(d *Decoder, key string) error {
 	switch key {
 	case "id":
 		return d.DecodeInt(&b.id)
@@ -29,19 +29,19 @@ func (b *testSmallStruct) UnmarshalMsgpackMap(d *Decoder, key string) error {
 	return nil
 }
 
-func (b *testSmallStruct) KeySize() uint32 {
+func (b *TestStruct) KeySize() uint32 {
 	return 3
 }
 
-var SmallStruct = &testSmallStruct{
+var SmallStruct = &TestStruct{
 	id: 12345,
 	ip: "192.168.0.100",
 	ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0",
 }
 
-var SmallStructDataJSON = []byte(`{"id":12345,"ip":"192.168.0.100","ua":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"}`)
+var TestStructDataJSON = []byte(`{"id":12345,"ip":"192.168.0.100","ua":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0"}`)
 
-var SmallStructData = []byte{
+var TestStructData = []byte{
 	0x83, 0xa2, 0x69, 0x64, 0xcd, 0x30, 0x39, 0xa2,
 	0x69, 0x70, 0xad, 0x31, 0x39, 0x32, 0x2e, 0x31,
 	0x36, 0x38, 0x2e, 0x30, 0x2e, 0x31, 0x30, 0x30,

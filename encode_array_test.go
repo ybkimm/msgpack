@@ -2,7 +2,6 @@ package msgpack
 
 import (
 	"bytes"
-	"encoding/json"
 	"testing"
 )
 
@@ -44,17 +43,5 @@ func TestEncoder_encodeArray(t *testing.T) {
 				t.Errorf("encodeArray() got = [% X], want = [% X]", got, tt.want)
 			}
 		})
-	}
-}
-
-func BenchmarkEncoder_encodeArray(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		NewEncoder(nil).encodeArray(SmallArray)
-	}
-}
-
-func BenchmarkJSON_marshalArray(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		json.Marshal(SmallArray)
 	}
 }
