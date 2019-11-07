@@ -14,7 +14,7 @@ func TestEncoder_EncodeMap(t *testing.T) {
 	}{
 		{
 			"a object",
-			SmallStruct,
+			TestStructInstance,
 			TestStructData,
 			false,
 		},

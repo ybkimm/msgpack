@@ -33,7 +33,7 @@ func (b *TestStruct) KeySize() uint32 {
 	return 3
 }
 
-var SmallStruct = &TestStruct{
+var TestStructInstance = &TestStruct{
 	id: 12345,
 	ip: "192.168.0.100",
 	ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0",
@@ -58,15 +58,15 @@ var TestStructData = []byte{
 	0x31, 0x2e, 0x30,
 }
 
-var _ Array = (*benchSmallArray)(nil)
+var _ Array = (*TestArray)(nil)
 
-type benchSmallArray []string
+type TestArray []string
 
-func (s *benchSmallArray) MarshalMsgpackArray(e *Encoder, i int) {
+func (s *TestArray) MarshalMsgpackArray(e *Encoder, i int) {
 	e.PutString((*s)[i])
 }
 
-func (s *benchSmallArray) UnmarshalMsgpackArray(d *Decoder, l int) (err error) {
+func (s *TestArray) UnmarshalMsgpackArray(d *Decoder, l int) (err error) {
 	for i := 0; i < l; i++ {
 		err = d.DecodeString(&(*s)[i])
 		if err != nil {
@@ -76,11 +76,11 @@ func (s *benchSmallArray) UnmarshalMsgpackArray(d *Decoder, l int) (err error) {
 	return
 }
 
-func (s *benchSmallArray) Length() uint32 {
+func (s *TestArray) Length() uint32 {
 	return uint32(len(*s))
 }
 
-var SmallArray = &benchSmallArray{
+var TestArrayInstance = &TestArray{
 	"Hello", "World",
 	"Hello", "World",
 	"Hello", "World",
@@ -89,6 +89,24 @@ var SmallArray = &benchSmallArray{
 	"Hello", "World",
 	"Hello", "World",
 	"Hello", "World",
+}
+
+var TestArrayDataJSON = []byte(`["Hello","World","Hello","World","Hello","World","Hello","World","Hello","World","Hello","World","Hello","World","Hello","World"]`)
+
+var TestArrayData = []byte{
+	0xDC, 0x00, 0x10, 0xA5, 0x48, 0x65, 0x6C, 0x6C,
+	0x6F, 0xA5, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0xA5,
+	0x48, 0x65, 0x6C, 0x6C, 0x6F, 0xA5, 0x57, 0x6F,
+	0x72, 0x6C, 0x64, 0xA5, 0x48, 0x65, 0x6C, 0x6C,
+	0x6F, 0xA5, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0xA5,
+	0x48, 0x65, 0x6C, 0x6C, 0x6F, 0xA5, 0x57, 0x6F,
+	0x72, 0x6C, 0x64, 0xA5, 0x48, 0x65, 0x6C, 0x6C,
+	0x6F, 0xA5, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0xA5,
+	0x48, 0x65, 0x6C, 0x6C, 0x6F, 0xA5, 0x57, 0x6F,
+	0x72, 0x6C, 0x64, 0xA5, 0x48, 0x65, 0x6C, 0x6C,
+	0x6F, 0xA5, 0x57, 0x6F, 0x72, 0x6C, 0x64, 0xA5,
+	0x48, 0x65, 0x6C, 0x6C, 0x6F, 0xA5, 0x57, 0x6F,
+	0x72, 0x6C, 0x64,
 }
 
 var TestString = "A 'Hello, World!' program generally is a computer program that outputs " +

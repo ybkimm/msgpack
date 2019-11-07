@@ -31,6 +31,12 @@ func TestEncoder_encodeArray(t *testing.T) {
 			[]byte{0x93, 0x01, 0x02, 0x03},
 			false,
 		},
+		{
+			"basic array",
+			TestArrayInstance,
+			TestArrayData,
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
