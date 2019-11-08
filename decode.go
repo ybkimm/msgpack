@@ -1,7 +1,6 @@
 package msgpack
 
 import (
-	"bytes"
 	"encoding/binary"
 	"io"
 	"reflect"
@@ -9,8 +8,7 @@ import (
 )
 
 func Unmarshal(data []byte, out interface{}) error {
-	return NewDecoder(bytes.NewReader(data)).
-		Decode(out)
+	return NewBytesDecoder(data).Decode(out)
 }
 
 type Decoder struct {
@@ -24,6 +22,13 @@ type Decoder struct {
 func NewDecoder(r io.Reader) *Decoder {
 	return &Decoder{
 		r: r,
+	}
+}
+
+func NewBytesDecoder(data []byte) *Decoder {
+	return &Decoder{
+		buf:    data,
+		length: len(data),
 	}
 }
 
@@ -93,7 +98,7 @@ func (d *Decoder) Decode(v interface{}) error {
 
 func (d *Decoder) read() (bool, error) {
 	if d.r == nil {
-		return false, ErrNoReader
+		return false, nil
 	}
 
 	if len(d.buf) >= d.length {
