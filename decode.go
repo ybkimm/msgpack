@@ -102,9 +102,12 @@ func (d *Decoder) read() (bool, error) {
 	}
 
 	if len(d.buf) >= d.length {
-		bufSize := d.length * 2
-		if bufSize == 0 {
+		var bufSize int
+
+		if d.length == 0 {
 			bufSize = 4096
+		} else {
+			bufSize = d.length * 2
 		}
 
 		buf := make([]byte, bufSize, bufSize)

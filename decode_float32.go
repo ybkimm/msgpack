@@ -2,11 +2,19 @@ package msgpack
 
 import "math"
 
+func UnmarshalFloat32(data []byte, v *float32) error {
+	return NewBytesDecoder(data).DecodeFloat32(v)
+}
+
 func (d *Decoder) DecodeFloat32(v *float32) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeFloat32(&v)
+}
+
+func UnmarshalNullableFloat32(data []byte, v **float32) error {
+	return NewBytesDecoder(data).DecodeNullableFloat32(v)
 }
 
 func (d *Decoder) DecodeNullableFloat32(v **float32) error {

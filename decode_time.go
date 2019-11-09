@@ -2,11 +2,19 @@ package msgpack
 
 import "time"
 
+func UnmarshalTime(data []byte, v *time.Time) error {
+	return NewBytesDecoder(data).DecodeTime(v)
+}
+
 func (d *Decoder) DecodeTime(v *time.Time) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeTime(&v)
+}
+
+func UnmarshalNullableTime(data []byte, v **time.Time) error {
+	return NewBytesDecoder(data).DecodeNullableTime(v)
 }
 
 func (d *Decoder) DecodeNullableTime(v **time.Time) error {

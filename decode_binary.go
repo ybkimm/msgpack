@@ -1,10 +1,18 @@
 package msgpack
 
+func UnmarshalBinary(data []byte, v *[]byte) error {
+	return NewBytesDecoder(data).DecodeBinary(v)
+}
+
 func (d *Decoder) DecodeBinary(v *[]byte) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeBinary(&v)
+}
+
+func UnmarshalNullableBinary(data []byte, v **[]byte) error {
+	return NewBytesDecoder(data).DecodeNullableBinary(v)
 }
 
 func (d *Decoder) DecodeNullableBinary(v **[]byte) error {

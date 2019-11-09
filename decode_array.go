@@ -1,14 +1,19 @@
 package msgpack
 
+func UnmarshalArray(data []byte, v Array) error {
+	return NewBytesDecoder(data).DecodeArray(v)
+}
+
 func (d *Decoder) DecodeArray(v Array) error {
-	if v == nil {
-		return ErrDecodeNil
-	}
 	return d.decodeArray(v)
 }
 
+func UnmarshalNullableArray(data []byte, v NullableArray) error {
+	return NewBytesDecoder(data).DecodeNullableArray(v)
+}
+
 func (d *Decoder) DecodeNullableArray(v NullableArray) error {
-	return d.DecodeArray(v)
+	return d.decodeArray(v)
 }
 
 func (d *Decoder) decodeArrayHeader(c byte) (int, error) {

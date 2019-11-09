@@ -1,10 +1,15 @@
 package msgpack
 
+func UnmarshalExtension(data []byte, v Extension) error {
+	return NewBytesDecoder(data).DecodeExtension(v)
+}
+
 func (d *Decoder) DecodeExtension(v Extension) error {
-	if v == nil {
-		return ErrDecodeNil
-	}
 	return d.decodeExtension(v)
+}
+
+func UnmarshalNullableExtension(data []byte, v NullableExtension) error {
+	return NewBytesDecoder(data).DecodeNullableExtension(v)
 }
 
 func (d *Decoder) DecodeNullableExtension(v NullableExtension) error {
@@ -64,6 +69,10 @@ func (d *Decoder) decodeExtensionHeader(c byte) (int, int8, error) {
 }
 
 func (d *Decoder) decodeExtension(v Extension) error {
+	if v == nil {
+		return ErrDecodeNil
+	}
+
 	c, err := d.nextByte()
 	if err != nil {
 		return err

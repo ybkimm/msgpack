@@ -1,10 +1,18 @@
 package msgpack
 
+func UnmarshalInt32(data []byte, v *int32) error {
+	return NewBytesDecoder(data).DecodeInt32(v)
+}
+
 func (d *Decoder) DecodeInt32(v *int32) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeInt32(&v)
+}
+
+func UnmarshalNullableInt32(data []byte, v **int32) error {
+	return NewBytesDecoder(data).DecodeNullableInt32(v)
 }
 
 func (d *Decoder) DecodeNullableInt32(v **int32) error {

@@ -4,11 +4,19 @@ import (
 	"math"
 )
 
+func UnmarshalFloat64(data []byte, v *float64) error {
+	return NewBytesDecoder(data).DecodeFloat64(v)
+}
+
 func (d *Decoder) DecodeFloat64(v *float64) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeFloat64(&v)
+}
+
+func UnmarshalNullableFloat64(data []byte, v **float64) error {
+	return NewBytesDecoder(data).DecodeNullableFloat64(v)
 }
 
 func (d *Decoder) DecodeNullableFloat64(v **float64) error {

@@ -5,11 +5,19 @@ import (
 	"unsafe"
 )
 
+func UnmarshalString(data []byte, v *string) error {
+	return NewBytesDecoder(data).DecodeString(v)
+}
+
 func (d *Decoder) DecodeString(v *string) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeString(&v)
+}
+
+func UnmarshalNullableString(data []byte, v **string) error {
+	return NewBytesDecoder(data).DecodeNullableString(v)
 }
 
 func (d *Decoder) DecodeNullableString(v **string) error {

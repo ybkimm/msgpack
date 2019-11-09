@@ -1,10 +1,18 @@
 package msgpack
 
+func UnmarshalBool(data []byte, v *bool) error {
+	return NewBytesDecoder(data).DecodeBool(v)
+}
+
 func (d *Decoder) DecodeBool(v *bool) error {
 	if v == nil {
 		return ErrDecodeNil
 	}
 	return d.decodeBool(&v)
+}
+
+func UnmarshalNullableBool(data []byte, v **bool) error {
+	return NewBytesDecoder(data).DecodeNullableBool(v)
 }
 
 func (d *Decoder) DecodeNullableBool(v **bool) error {

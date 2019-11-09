@@ -1,14 +1,19 @@
 package msgpack
 
+func UnmarshalMap(data []byte, v Map) error {
+	return NewBytesDecoder(data).DecodeMap(v)
+}
+
 func (d *Decoder) DecodeMap(v Map) error {
-	if v == nil {
-		return ErrDecodeNil
-	}
 	return d.decodeMap(v)
 }
 
+func UnmarshalNullableMap(data []byte, v NullableMap) error {
+	return NewBytesDecoder(data).DecodeNullableMap(v)
+}
+
 func (d *Decoder) DecodeNullableMap(v NullableMap) error {
-	return d.DecodeMap(v)
+	return d.decodeMap(v)
 }
 
 func (d *Decoder) decodeMapHeader(c byte) (int, error) {
