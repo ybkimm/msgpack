@@ -34,18 +34,17 @@ Testing PC spec:
 * Windows 10 Pro Build 18362.418
 
 ```plaintext
-BenchmarkDecoder_decodeMap-8              999816              1005 ns/op            4224 B/op          4 allocs/op
-BenchmarkDecoder_decodeArray-8            857074              1337 ns/op            4464 B/op          4 allocs/op
+BenchmarkDecoder_decodeMap-8             8694976               133 ns/op              80 B/op          2 allocs/op
+BenchmarkDecoder_decodeArray-8           2574930               466 ns/op             320 B/op          2 allocs/op
 BenchmarkEncoder_encodeMap-8             4686970               254 ns/op             576 B/op          2 allocs/op
 BenchmarkEncoder_encodeArray-8           3061005               391 ns/op             576 B/op          2 allocs/op
 ```
 
-For benchmark data, see [msgpack_test.go](./msgpack_test.go)
+For benchmark data, see [msgpack_test.go](./msgpack_test.go).
 
 Todo List
 =========
-* Optimize JSON conversion, decoding. Maybe, sometime...
-* Refactor decode functions
+* Optimize JSON conversion
 
 License
 =======
@@ -55,7 +54,7 @@ MIT License.
 [godoc_badge]:   https://img.shields.io/badge/godoc-reference-blue.svg
 [license]:       ./License
 [license_badge]: https://img.shields.io/badge/license-MIT-green.svg
-[map]:           https://godoc.org/github.com/ybkimm/msgpack#Object
+[map]:           https://godoc.org/github.com/ybkimm/msgpack#Map
 [array]:         https://godoc.org/github.com/ybkimm/msgpack#Array
 [extension]:     https://godoc.org/github.com/ybkimm/msgpack#Extension
 [fromjson]:      https://godoc.org/github.com/ybkimm/msgpack#FromJSON
