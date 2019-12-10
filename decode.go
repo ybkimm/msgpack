@@ -137,7 +137,7 @@ func (d *Decoder) nextByte() (byte, error) {
 			return 0, err
 		}
 		if !ok {
-			return 0, io.EOF
+			return 0, io.ErrUnexpectedEOF
 		}
 	}
 
