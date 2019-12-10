@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ybkimm/msgpack"
+	"github.com/ybkimm/mono/packages/encoding/msgpack"
 )
 
 func main() {
