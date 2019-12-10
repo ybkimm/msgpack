@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalString returns string value as msgpack format.
 func MarshalString(v string) ([]byte, error) {
 	return NewEncoder(nil).encodeString(v)
 }
 
-func (e *Encoder) PutString(v string) {
-	e.encodeString(v)
-}
-
-func (e *Encoder) PutStringKey(key string, v string) {
-	e.encodeString(key)
-	e.encodeString(v)
+// PutString puts string variable to encoder.
+func (e *Encoder) PutString(v string) (err error) {
+	e.encodeKey()
+	_, err = e.encodeString(v)
+	return
 }
 
 func (e *Encoder) encodeString(v string) ([]byte, error) {

@@ -7,17 +7,16 @@ import (
 	"math"
 )
 
+// FromJSON converts json data to msgpack format.
 func FromJSON(data []byte) ([]byte, error) {
 	return NewEncoder(nil).encodeJSON(data)
 }
 
-func (e *Encoder) PutJSON(data []byte) {
-	e.encodeJSON(data)
-}
-
-func (e *Encoder) PutJSONKey(key string, data []byte) {
-	e.encodeString(key)
-	e.encodeJSON(data)
+// PutJSON convets json data to msgpack and puts to encoder.
+func (e *Encoder) PutJSON(data []byte) (err error) {
+	e.encodeKey()
+	_, err = e.encodeJSON(data)
+	return
 }
 
 func (e *Encoder) encodeJSON(data []byte) ([]byte, error) {

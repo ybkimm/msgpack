@@ -73,6 +73,37 @@ func (d *Decoder) decodeInt(v **int) error {
 			return err
 		}
 		**v = int(int64(n))
+
+	case Uint8:
+		n, err := d.nextByte()
+		if err != nil {
+			return err
+		}
+		**v = int(uint8(n))
+
+	case Uint16:
+		n, err := d.nextUint16()
+		if err != nil {
+			return err
+		}
+		**v = int(uint16(n))
+
+	case Uint32:
+		n, err := d.nextUint32()
+		if err != nil {
+			return err
+		}
+		**v = int(uint32(n))
+
+	case Uint64:
+		n, err := d.nextUint64()
+		if err != nil {
+			return err
+		}
+		**v = int(uint64(n))
+
+	default:
+		return d.unexpectedByteErr(c)
 	}
 
 	return nil

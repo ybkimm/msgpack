@@ -2,17 +2,16 @@ package msgpack
 
 import "math"
 
+// MarshalFloat32 returns float32 value as msgpack format.
 func MarshalFloat32(v float32) ([]byte, error) {
 	return NewEncoder(nil).encodeFloat32(v)
 }
 
-func (e *Encoder) PutFloat32(v float32) {
-	e.encodeFloat32(v)
-}
-
-func (e *Encoder) PutFloat32Key(key string, v float32) {
-	e.encodeString(key)
-	e.encodeFloat32(v)
+// PutFloat32 puts float32 variable to encoder.
+func (e *Encoder) PutFloat32(v float32) (err error) {
+	e.encodeKey()
+	_, err = e.encodeFloat32(v)
+	return
 }
 
 func (e *Encoder) encodeFloat32(v float32) ([]byte, error) {

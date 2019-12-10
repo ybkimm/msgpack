@@ -1,11 +1,13 @@
 package msgpack
 
+// Extension is an interface for application-specific type.
 type Extension interface {
 	ExtensionType() int8
 	MarshalMsgpackExtension() []byte
 	UnmarshalMsgpackExtension(p []byte) error
 }
 
+// NullableExtension is an extension that can be nil.
 type NullableExtension interface {
 	Nullable
 	Extension

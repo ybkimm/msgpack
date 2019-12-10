@@ -37,10 +37,11 @@ func (e *ErrUnexpectedJSONToken) Error() string {
 type ErrUnexpectedByte struct {
 	Byte     byte
 	Position int
+	Stack    []byte
 }
 
 func (e *ErrUnexpectedByte) Error() string {
-	return fmt.Sprintf("msgpack: unexpected byte 0x%02X at position %d", e.Byte, e.Position)
+	return fmt.Sprintf("msgpack: unexpected byte 0x%02X at position %d, stack:\n%s", e.Byte, e.Position, e.Stack)
 }
 
 type ErrUnexpectedExtensionType struct {

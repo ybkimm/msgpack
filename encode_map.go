@@ -1,35 +1,50 @@
 package msgpack
 
+// MarshalMap returns map value as msgpack format.
 func MarshalMap(o Map) ([]byte, error) {
 	return NewEncoder(nil).encodeMap(o)
 }
 
-func (e *Encoder) PutMap(o Map) {
-	e.encodeMap(o)
+// PutMap puts map variable to encoder.
+func (e *Encoder) PutMap(o Map) (err error) {
+	e.encodeKey()
+	_, err = e.encodeMap(o)
+	return
 }
 
-func (e *Encoder) PutMapKey(key string, o Map) {
-	e.encodeString(key)
-	e.encodeMap(o)
-}
-
-func (e *Encoder) encodeMap(o Map) ([]byte, error) {
-	keysize := o.KeySize()
+func (e *Encoder) encodeMap(o Map) (data []byte, err error) {
 	e.grow(512)
+
+	fields := o.Fields()
+	keysize := len(fields)
+
+	lastSize := len(e.buf)
+
+	for _, field := range fields {
+		e.key = field
+
+		err = o.MarshalMsgpackMap(e, field)
+		if err != nil {
+			return
+		}
+
+		if len(e.key) > 0 {
+			keysize--
+		}
+	}
 
 	switch {
 	case keysize <= fixmapMaxLen:
-		e.writeByte(fixmapPrefix | byte(keysize))
+		e.insertByte(fixmapPrefix|byte(keysize), lastSize)
 
 	case keysize <= map16MaxLen:
-		e.writeByte(Map16)
-		e.writeUint16(uint16(keysize))
+		e.insertUint16(uint16(keysize), lastSize)
+		e.insertByte(Map16, lastSize)
 
 	default:
-		e.writeByte(Map32)
-		e.writeUint32(keysize)
+		e.insertUint32(uint32(keysize), lastSize)
+		e.insertByte(Map32, lastSize)
 	}
 
-	o.MarshalMsgpackMap(e)
 	return e.buf, e.err
 }

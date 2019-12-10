@@ -48,7 +48,9 @@ Todo List
 
 License
 =======
-MIT License.
+MIT License. See [License](license).
+
+Some code snippets are comes from [gojay](gojay) - See [it's license](gojay_license).
 
 [godoc]:         https://godoc.org/github.com/ybkimm/msgpack
 [godoc_badge]:   https://img.shields.io/badge/godoc-reference-blue.svg
@@ -61,3 +63,4 @@ MIT License.
 [tojson]:        https://godoc.org/github.com/ybkimm/msgpack#ToJSON
 
 [gojay]:         https://github.com/francoispqt/gojay
+[gojay_license]: https://github.com/francoispqt/gojay/blob/decd89f/LICENSE

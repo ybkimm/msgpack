@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"io"
 	"reflect"
+	"runtime/debug"
 	"time"
 )
 
@@ -137,7 +138,7 @@ func (d *Decoder) nextByte() (byte, error) {
 			return 0, err
 		}
 		if !ok {
-			return 0, io.EOF
+			return 0, io.ErrUnexpectedEOF
 		}
 	}
 
@@ -204,5 +205,6 @@ func (d *Decoder) unexpectedByteErr(c byte) *ErrUnexpectedByte {
 	return &ErrUnexpectedByte{
 		Byte:     c,
 		Position: d.cursor - 1,
+		Stack:    debug.Stack(),
 	}
 }

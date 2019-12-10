@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalInt returns int value as msgpack format.
 func MarshalInt(v int) ([]byte, error) {
 	return NewEncoder(nil).encodeInt(v)
 }
 
-func (e *Encoder) PutInt(v int) {
-	e.encodeInt(v)
-}
-
-func (e *Encoder) PutIntKey(key string, v int) {
-	e.encodeString(key)
-	e.encodeInt(v)
+// PutInt puts int variable to encoder.
+func (e *Encoder) PutInt(v int) (err error) {
+	e.encodeKey()
+	_, err = e.encodeInt(v)
+	return
 }
 
 func (e *Encoder) encodeInt(v int) ([]byte, error) {

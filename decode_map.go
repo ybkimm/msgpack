@@ -19,19 +19,19 @@ func (d *Decoder) DecodeNullableMap(v NullableMap) error {
 func (d *Decoder) decodeMapHeader(c byte) (int, error) {
 	if c>>4 == 0b1000 {
 		return int(c & 0b00001111), nil
-	} else {
-		switch c {
-		case Map16:
-			n, err := d.nextUint16()
-			return int(n), err
+	}
 
-		case Map32:
-			n, err := d.nextUint32()
-			return int(n), err
+	switch c {
+	case Map16:
+		n, err := d.nextUint16()
+		return int(n), err
 
-		default:
-			return 0, d.unexpectedByteErr(c)
-		}
+	case Map32:
+		n, err := d.nextUint32()
+		return int(n), err
+
+	default:
+		return 0, d.unexpectedByteErr(c)
 	}
 }
 

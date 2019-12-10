@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalInt16 returns int16 value as msgpack format.
 func MarshalInt16(v int16) ([]byte, error) {
 	return NewEncoder(nil).encodeInt16(v)
 }
 
-func (e *Encoder) PutInt16(v int16) {
-	e.encodeInt16(v)
-}
-
-func (e *Encoder) PutInt16Key(key string, v int16) {
-	e.encodeString(key)
-	e.encodeInt16(v)
+// PutInt16 puts int16 variable to encoder.
+func (e *Encoder) PutInt16(v int16) (err error) {
+	e.encodeKey()
+	_, err = e.encodeInt16(v)
+	return
 }
 
 func (e *Encoder) encodeInt16(v int16) ([]byte, error) {

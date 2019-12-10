@@ -2,17 +2,16 @@ package msgpack
 
 import "time"
 
+// MarshalTime returns time.Time value as msgpack format.
 func MarshalTime(t time.Time) ([]byte, error) {
 	return NewEncoder(nil).encodeTime(t)
 }
 
-func (e *Encoder) PutTime(t time.Time) {
-	e.encodeTime(t.UTC())
-}
-
-func (e *Encoder) PutTimeKey(key string, t time.Time) {
-	e.encodeString(key)
-	e.encodeTime(t.UTC())
+// PutTime puts time.Time variable to encoder.
+func (e *Encoder) PutTime(t time.Time) (err error) {
+	e.encodeKey()
+	_, err = e.encodeTime(t.UTC())
+	return
 }
 
 func (e *Encoder) encodeTime(t time.Time) ([]byte, error) {

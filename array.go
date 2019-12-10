@@ -3,7 +3,7 @@ package msgpack
 import "time"
 
 type Array interface {
-	MarshalMsgpackArray(e *Encoder, i int)
+	MarshalMsgpackArray(e *Encoder, i int) error
 	UnmarshalMsgpackArray(d *Decoder, l int) error
 	Length() uint32
 }
@@ -15,8 +15,8 @@ type NullableArray interface {
 
 type BoolArray []bool
 
-func (a *BoolArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutBool((*a)[i])
+func (a *BoolArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutBool((*a)[i])
 }
 
 func (a *BoolArray) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -37,8 +37,8 @@ func (a *BoolArray) Length() uint32 {
 
 type IntArray []int
 
-func (a *IntArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutInt((*a)[i])
+func (a *IntArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutInt((*a)[i])
 }
 
 func (a *IntArray) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -59,8 +59,8 @@ func (a *IntArray) Length() uint32 {
 
 type Int8Array []int8
 
-func (a *Int8Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutInt8((*a)[i])
+func (a *Int8Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutInt8((*a)[i])
 }
 
 func (a *Int8Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -81,8 +81,8 @@ func (a *Int8Array) Length() uint32 {
 
 type Int16Array []int16
 
-func (a *Int16Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutInt16((*a)[i])
+func (a *Int16Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutInt16((*a)[i])
 }
 
 func (a *Int16Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -103,8 +103,8 @@ func (a *Int16Array) Length() uint32 {
 
 type Int32Array []int32
 
-func (a *Int32Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutInt32((*a)[i])
+func (a *Int32Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutInt32((*a)[i])
 }
 
 func (a *Int32Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -125,8 +125,8 @@ func (a *Int32Array) Length() uint32 {
 
 type Int64Array []int64
 
-func (a *Int64Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutInt64((*a)[i])
+func (a *Int64Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutInt64((*a)[i])
 }
 
 func (a *Int64Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -147,8 +147,8 @@ func (a *Int64Array) Length() uint32 {
 
 type UintArray []uint
 
-func (a *UintArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutUint((*a)[i])
+func (a *UintArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutUint((*a)[i])
 }
 
 func (a *UintArray) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -169,8 +169,8 @@ func (a *UintArray) Length() uint32 {
 
 type Uint16Array []uint16
 
-func (a *Uint16Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutUint16((*a)[i])
+func (a *Uint16Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutUint16((*a)[i])
 }
 
 func (a *Uint16Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -191,8 +191,8 @@ func (a *Uint16Array) Length() uint32 {
 
 type Uint32Array []uint32
 
-func (a *Uint32Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutUint32((*a)[i])
+func (a *Uint32Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutUint32((*a)[i])
 }
 
 func (a *Uint32Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -213,8 +213,8 @@ func (a *Uint32Array) Length() uint32 {
 
 type Uint64Array []uint64
 
-func (a *Uint64Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutUint64((*a)[i])
+func (a *Uint64Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutUint64((*a)[i])
 }
 
 func (a *Uint64Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -235,8 +235,8 @@ func (a *Uint64Array) Length() uint32 {
 
 type Float32Array []float32
 
-func (a *Float32Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutFloat32((*a)[i])
+func (a *Float32Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutFloat32((*a)[i])
 }
 
 func (a *Float32Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -257,8 +257,8 @@ func (a *Float32Array) Length() uint32 {
 
 type Float64Array []float64
 
-func (a *Float64Array) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutFloat64((*a)[i])
+func (a *Float64Array) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutFloat64((*a)[i])
 }
 
 func (a *Float64Array) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -279,8 +279,8 @@ func (a *Float64Array) Length() uint32 {
 
 type StringArray []string
 
-func (a *StringArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutString((*a)[i])
+func (a *StringArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutString((*a)[i])
 }
 
 func (a *StringArray) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -301,8 +301,8 @@ func (a *StringArray) Length() uint32 {
 
 type BinaryArray [][]byte
 
-func (a *BinaryArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutBinary((*a)[i])
+func (a *BinaryArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutBinary((*a)[i])
 }
 
 func (a *BinaryArray) UnmarshalMsgpackArray(d *Decoder, l int) error {
@@ -323,8 +323,8 @@ func (a *BinaryArray) Length() uint32 {
 
 type TimeArray []time.Time
 
-func (a *TimeArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutTime((*a)[i])
+func (a *TimeArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutTime((*a)[i])
 }
 
 func (a *TimeArray) UnmarshalMsgpackArray(d *Decoder, l int) error {

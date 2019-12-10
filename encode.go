@@ -7,16 +7,20 @@ import (
 	"time"
 )
 
+// Marshal returns value v as msgpack format.
 func Marshal(v interface{}) ([]byte, error) {
 	return NewEncoder(nil).encode(v)
 }
 
+// Encoder writes msgpack formatted variable to writer.
 type Encoder struct {
 	w   io.Writer
+	key string
 	buf []byte
 	err error
 }
 
+// NewEncoder returns new encoder instance.
 func NewEncoder(w io.Writer) *Encoder {
 	return (&Encoder{w: w}).Reset()
 }
@@ -142,18 +146,35 @@ func (e *Encoder) encode(v interface{}) ([]byte, error) {
 	}
 }
 
+// Bytes returns encoder's current buffer.
+func (e *Encoder) Bytes() []byte {
+	return e.buf
+}
+
+func (e *Encoder) Error() error {
+	return e.err
+}
+
+// Reset resets encoder.
 func (e *Encoder) Reset() *Encoder {
 	e.buf = make([]byte, 0, 512)
 	e.err = nil
 	return e
 }
 
+// grow function is come from gojay.
+// https://github.com/francoispqt/gojay/blob/decd89f/encode_builder.go#L8
+// for license: https://github.com/francoispqt/gojay/blob/decd89f/LICENSE
 func (e *Encoder) grow(n int) {
 	if cap(e.buf)-len(e.buf) < n {
 		buf := make([]byte, len(e.buf), 2*cap(e.buf)+n)
 		copy(buf, e.buf)
 		e.buf = buf
 	}
+}
+
+func (e *Encoder) appendZero(n int) {
+	e.buf = append(e.buf, make([]byte, n)...)
 }
 
 func (e *Encoder) writeByte(c byte) {
@@ -169,21 +190,59 @@ func (e *Encoder) writeString(s string) {
 }
 
 func (e *Encoder) writeUint16(v uint16) {
-	buf := make([]byte, 2)
-	binary.BigEndian.PutUint16(buf, v)
-	e.writeBytes(buf)
+	e.appendZero(2)
+	binary.BigEndian.PutUint16(e.buf[len(e.buf)-2:], v)
 }
 
 func (e *Encoder) writeUint32(v uint32) {
-	buf := make([]byte, 4)
-	binary.BigEndian.PutUint32(buf, v)
-	e.writeBytes(buf)
+	e.appendZero(4)
+	binary.BigEndian.PutUint32(e.buf[len(e.buf)-4:], v)
 }
 
 func (e *Encoder) writeUint64(v uint64) {
-	buf := make([]byte, 8)
-	binary.BigEndian.PutUint64(buf, v)
-	e.writeBytes(buf)
+	e.appendZero(8)
+	binary.BigEndian.PutUint64(e.buf[len(e.buf)-8:], v)
+}
+
+func (e *Encoder) insertByte(c byte, i int) {
+	e.insertBytes([]byte{c}, i)
+}
+
+func (e *Encoder) insertBytes(p []byte, i int) {
+	var l = len(p)
+	e.appendZero(l)
+	copy(e.buf[i+l:], e.buf[i:])
+	copy(e.buf[i:], p)
+}
+
+func (e *Encoder) insertString(s string, i int) {
+	e.insertBytes([]byte(s), i)
+}
+
+func (e *Encoder) insertUint16(v uint16, i int) {
+	e.insertBytes(make([]byte, 2), i)
+	binary.BigEndian.PutUint16(e.buf[i:], v)
+}
+
+func (e *Encoder) insertUint32(v uint32, i int) {
+	e.insertBytes(make([]byte, 4), i)
+	binary.BigEndian.PutUint32(e.buf[i:], v)
+}
+
+func (e *Encoder) insertUint64(v uint64, i int) {
+	e.insertBytes(make([]byte, 8), i)
+	binary.BigEndian.PutUint64(e.buf[i:], v)
+}
+
+func (e *Encoder) encodeKey() {
+	if len(e.key) == 0 {
+		return
+	}
+
+	key := e.key
+	e.key = ""
+
+	e.encodeString(key)
 }
 
 func (e *Encoder) flush() error {

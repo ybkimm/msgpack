@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalInt64 returns int64 value as msgpack format.
 func MarshalInt64(v int64) ([]byte, error) {
 	return NewEncoder(nil).encodeInt64(v)
 }
 
-func (e *Encoder) PutInt64(v int64) {
-	e.encodeInt64(v)
-}
-
-func (e *Encoder) PutInt64Key(key string, v int64) {
-	e.encodeString(key)
-	e.encodeInt64(v)
+// PutInt64 puts int64 variable to encoder.
+func (e *Encoder) PutInt64(v int64) (err error) {
+	e.encodeKey()
+	_, err = e.encodeInt64(v)
+	return
 }
 
 func (e *Encoder) encodeInt64(v int64) ([]byte, error) {

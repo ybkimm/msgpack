@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalUint returns uint value as msgpack format.
 func MarshalUint(v uint) ([]byte, error) {
 	return NewEncoder(nil).encodeUint(v)
 }
 
-func (e *Encoder) PutUint(v uint) {
-	e.encodeUint(v)
-}
-
-func (e *Encoder) PutUintKey(key string, v uint) {
-	e.encodeString(key)
-	e.encodeUint(v)
+// PutUint puts uint variable to encoder.
+func (e *Encoder) PutUint(v uint) (err error) {
+	e.encodeKey()
+	_, err = e.encodeUint(v)
+	return
 }
 
 func (e *Encoder) encodeUint(v uint) ([]byte, error) {

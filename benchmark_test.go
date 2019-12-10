@@ -8,20 +8,24 @@ type TestStruct struct {
 
 var _ Map = (*TestStruct)(nil)
 
-func (b *TestStruct) MarshalMsgpackMap(e *Encoder) {
-	e.PutIntKey("id", b.id)
-	e.PutStringKey("ip", b.ip)
-	e.PutStringKey("ua", b.ua)
+func (b *TestStruct) MarshalMsgpackMap(e *Encoder, key string) error {
+	switch key {
+	case "id":
+		return e.PutInt(b.id)
+	case "ip":
+		return e.PutString(b.ip)
+	case "ua":
+		return e.PutString(b.ua)
+	}
+	return nil
 }
 
 func (b *TestStruct) UnmarshalMsgpackMap(d *Decoder, key string) error {
 	switch key {
 	case "id":
 		return d.DecodeInt(&b.id)
-
 	case "ip":
 		return d.DecodeString(&b.ip)
-
 	case "ua":
 		return d.DecodeString(&b.ua)
 	}
@@ -29,8 +33,8 @@ func (b *TestStruct) UnmarshalMsgpackMap(d *Decoder, key string) error {
 	return nil
 }
 
-func (b *TestStruct) KeySize() uint32 {
-	return 3
+func (b *TestStruct) Fields() []string {
+	return []string{"id", "ip", "ua"}
 }
 
 var TestStructInstance = &TestStruct{
@@ -62,8 +66,8 @@ var _ Array = (*TestArray)(nil)
 
 type TestArray []string
 
-func (s *TestArray) MarshalMsgpackArray(e *Encoder, i int) {
-	e.PutString((*s)[i])
+func (s *TestArray) MarshalMsgpackArray(e *Encoder, i int) error {
+	return e.PutString((*s)[i])
 }
 
 func (s *TestArray) UnmarshalMsgpackArray(d *Decoder, l int) (err error) {
