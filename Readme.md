@@ -24,7 +24,7 @@ Get Started
 go get -u github.com/ybkimm/msgpack
 ```
 
-For example, please see [examples/main.go](./examples/main.go).
+<!-- For example, please see [examples/main.go](./examples/main.go). -->
 
 Benchmark
 =========
@@ -32,12 +32,13 @@ Testing PC spec:
 * AMD Ryzen 5 2400G (3.90 GHz, 4 Cores, 8 Threads)
 * 8GB RAM (Samsung DDR4)
 * Windows 10 Pro Build 18362.418
+* WSL
 
 ```plaintext
-BenchmarkDecoder_decodeMap-8             8694976               133 ns/op              80 B/op          2 allocs/op
-BenchmarkDecoder_decodeArray-8           2574930               466 ns/op             320 B/op          2 allocs/op
-BenchmarkEncoder_encodeMap-8             4686970               254 ns/op             576 B/op          2 allocs/op
-BenchmarkEncoder_encodeArray-8           3061005               391 ns/op             576 B/op          2 allocs/op
+BenchmarkDecoder_decodeMap-8     	 5990668	       194 ns/op	      64 B/op	       1 allocs/op
+BenchmarkDecoder_decodeArray-8   	 2336313	       512 ns/op	     320 B/op	       2 allocs/op
+BenchmarkEncoder_encodeMap-8     	 3324308	       362 ns/op	     640 B/op	       3 allocs/op
+BenchmarkEncoder_encodeArray-8   	 2410296	       492 ns/op	     592 B/op	       2 allocs/op
 ```
 
 For benchmark data, see [msgpack_test.go](./msgpack_test.go).
@@ -45,6 +46,9 @@ For benchmark data, see [msgpack_test.go](./msgpack_test.go).
 Todo List
 =========
 * Optimize JSON conversion
+* 100% coverage
+* New benchmark data
+* Examples
 
 License
 =======
