@@ -13,8 +13,7 @@ func UnmarshalNullableArray(data []byte, v NullableArray) error {
 }
 
 func (d *Decoder) DecodeNullableArray(v NullableArray) error {
-	return d.decodeArray(1)
-	//return d.decodeArray(v)
+	return d.decodeArray(v)
 }
 
 func (d *Decoder) decodeArrayHeader(c byte) (int, error) {

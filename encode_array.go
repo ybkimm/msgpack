@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalArray returns array value as msgpack format.
 func MarshalArray(a Array) ([]byte, error) {
 	return NewEncoder(nil).encodeArray(a)
 }
 
-func (e *Encoder) PutArray(a Array) {
-	e.encodeArray(a)
-}
-
-func (e *Encoder) PutArrayKey(key string, a Array) {
-	e.encodeString(key)
-	e.encodeArray(a)
+// PutArray puts array variable to encoder.
+func (e *Encoder) PutArray(a Array) (err error) {
+	e.encodeKey()
+	_, err = e.encodeArray(a)
+	return
 }
 
 func (e *Encoder) encodeArray(a Array) ([]byte, error) {

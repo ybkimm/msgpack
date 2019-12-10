@@ -27,33 +27,41 @@ func main() {
 	fmt.Printf("Unmarshal() got = %v\n", unmarshalResult)
 }
 
+// UserAccess contains some info about user access.
 type UserAccess struct {
 	id int
 	ip string
 	ua string
 }
 
-func (b *UserAccess) MarshalMsgpackMap(e *msgpack.Encoder) {
-	e.PutIntKey("id", b.id)
-	e.PutStringKey("ip", b.ip)
-	e.PutStringKey("ua", b.ua)
+// MarshalMsgpackMap implements msgpack.Map
+func (b *UserAccess) MarshalMsgpackMap(e *msgpack.Encoder, key string) error {
+	switch key {
+	case "id":
+		return e.PutInt(b.id)
+	case "ip":
+		return e.PutString(b.ip)
+	case "ua":
+		return e.PutString(b.ua)
+	}
+	return nil
 }
 
+// UnmarshalMsgpackMap implements msgpack.Map
 func (b *UserAccess) UnmarshalMsgpackMap(d *msgpack.Decoder, key string) error {
 	switch key {
 	case "id":
 		return d.DecodeInt(&b.id)
-
 	case "ip":
 		return d.DecodeString(&b.ip)
-
 	case "ua":
 		return d.DecodeString(&b.ua)
 	}
-
 	return nil
 }
 
-func (b *UserAccess) KeySize() uint32 {
-	return 3
+// Fields retuns its field names.
+// it implements msgpack.Map
+func (b *UserAccess) Fields() []string {
+	return []string{"id", "ip", "ua"}
 }

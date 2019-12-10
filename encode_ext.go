@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalExtension returns extension value as msgpack format.
 func MarshalExtension(ext Extension) ([]byte, error) {
 	return NewEncoder(nil).encodeExtension(ext)
 }
 
-func (e *Encoder) PutExtension(ext Extension) {
-	e.encodeExtension(ext)
-}
-
-func (e *Encoder) PutExtensionKey(key string, ext Extension) {
-	e.encodeString(key)
-	e.encodeExtension(ext)
+// PutExtension puts extension variable to encoder.
+func (e *Encoder) PutExtension(ext Extension) (err error) {
+	e.encodeKey()
+	_, err = e.encodeExtension(ext)
+	return
 }
 
 func (e *Encoder) encodeExtension(ext Extension) ([]byte, error) {

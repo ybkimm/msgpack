@@ -1,16 +1,15 @@
 package msgpack
 
+// MarshalBinary returns binary value as msgpack format.
 func MarshalBinary(v []byte) ([]byte, error) {
 	return NewEncoder(nil).encodeBinary(v)
 }
 
-func (e *Encoder) PutBinary(v []byte) {
-	e.encodeBinary(v)
-}
-
-func (e *Encoder) PutBinaryKey(key string, v []byte) {
-	e.encodeString(key)
-	e.encodeBinary(v)
+// PutBinary puts binary variable to encoder.
+func (e *Encoder) PutBinary(v []byte) (err error) {
+	e.encodeKey()
+	_, err = e.encodeBinary(v)
+	return
 }
 
 func (e *Encoder) encodeBinary(v []byte) ([]byte, error) {
