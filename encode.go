@@ -2,8 +2,8 @@ package msgpack
 
 import (
 	"encoding/binary"
-	"encoding/json"
 	"io"
+	"reflect"
 	"time"
 )
 
@@ -136,13 +136,7 @@ func (e *Encoder) encode(v interface{}) ([]byte, error) {
 		return e.encodeArray((*TimeArray)(&vv))
 
 	default:
-		// Fallback:
-		src, err := json.Marshal(v)
-		if err != nil {
-			e.err = err
-			return e.buf, e.err
-		}
-		return e.encodeJSON(src)
+		return nil, &ErrUnsupportedType{reflect.TypeOf(v)}
 	}
 }
 
